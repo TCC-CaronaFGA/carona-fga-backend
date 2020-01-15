@@ -1,0 +1,17 @@
+version: "2.2"
+
+services:
+  api:
+    build: .
+    image: caronafga/api:latest
+    volumes:
+      - ".:/app"
+    ports:
+      - 5001:5000
+    environment:
+      - FLASK_APP=project/__init__.py
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=mysql+pymysql://username:password@localhost:3306/dbname
+      - DATABASE_TEST_URL=mysql+pymysql://username:password@localhost:3306/dbname
+      - SECRET_KEY=secret_key_rocks_0edf07a1b8a5f5f1aed7580fffb69ce8972edc16a505916a77
