@@ -1,0 +1,67 @@
+CREATE DATABASE if not exists CARONAFGA;
+
+USE CARONAFGA;
+
+CREATE TABLE USER (
+    idUser INT,
+    email VARCHAR(50) UNIQUE,
+    phone ENUM('D','P') UNIQUE,
+    name VARCHAR(50),
+    course BIGINT,
+    userType VARCHAR(1),
+    gender ENUM('H','M'),
+    points INT,
+    CONSTRAINT USER_PK PRIMARY KEY (idUser)
+);
+
+
+CREATE TABLE CAR (
+    idCar INT,
+    plate VARCHAR(7) UNIQUE,
+    color VARCHAR(20),
+    year INT,
+    model VARCHAR(20),
+    idUser INT,
+    CONSTRAINT CAR_PK PRIMARY KEY (idCar),
+    CONSTRAINT CAR_USER_FK FOREIGN KEY (idUser) REFERENCES USER(idUser)
+);
+
+CREATE TABLE RIDE (
+    idRide INT,
+    dtRide DATETIME,
+    availableSeats INT,
+    notes VARCHAR(140),
+    cost NUMERIC(4,2),
+    idCar INT,
+    idUser INT,
+    CONSTRAINT RIDE_PK PRIMARY KEY (idRide),
+    CONSTRAINT RIDE_CAR_FK FOREIGN KEY (idCar) REFERENCES CAR (idCar),
+    CONSTRAINT RIDE_USER_FK FOREIGN KEY (idUser) REFERENCES USER(idUser)
+);
+
+CREATE TABLE REQUEST_RIDE (
+    idRequest INT,
+    requestedSeats INT,
+    requestStatus BOOLEAN,
+    idRide INT,
+    idPassenger INT,
+    CONSTRAINT REQUEST_RIDE_PK PRIMARY KEY (idRequest),
+    CONSTRAINT REQUEST_RIDE_USER_FK FOREIGN KEY (idPassenger) REFERENCES USER (idUser),
+    CONSTRAINT REQUEST_RIDE_RIDE_FK FOREIGN KEY (idRide) REFERENCES RIDE (idRide)
+);
+
+CREATE TABLE RATING (
+    idRide INT,
+    rating INT,
+    comment VARCHAR(140),
+    idUser INT,
+    CONSTRAINT RATING_USER_FK FOREIGN KEY (idUser) REFERENCES USER (idUser),
+    CONSTRAINT RATING_RIDE_FK FOREIGN KEY (idRide) REFERENCES RIDE (idRide)
+);
+
+CREATE TABLE participate (
+    idUser INT,
+    idRide INT,
+    CONSTRAINT PARTICIPATE_USER_FK FOREIGN KEY (idUser) REFERENCES USER (idUser),
+    CONSTRAINT PARTIFIPATE_RIDE_FK FOREIGN KEY (idRide) REFERENCES RIDE (idRide)
+);
