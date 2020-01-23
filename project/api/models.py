@@ -8,28 +8,37 @@ import jwt
 class UserModel(db.Model):
     __tablename__ = 'USER'
 
-    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), nullable=False)
+    idUser = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    cpf = db.Column(db.String(11), unique=True, nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    course = db.Column(db.String(50), nullable=False)
+    phone = db.Column(db.Integer, nullable=False)
+    userType = db.Column(db.String(1), nullable=False)
+    gender = db.Column(db.String(1), nullable=False)
+    points = db.Column(db.Integer, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    url_avatar = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, name, email, cpf, password, url_avatar):
-        self.name = name
+    def __init__(self, email,name,course,phone,userType,gender,password,points):
         self.email = email
-        self.cpf = cpf
+        self.name = name
+        self.course = course
+        self.phone = phone
+        self.userType = userType
+        self.gender = gender
+        self.points = points
         self.password = bcrypt.generate_password_hash(
             password, current_app.config.get('BCRYPT_LOG_ROUNDS')).decode()
-        self.url_avatar = url_avatar
 
     def to_json(self):
         return{
-            'name': self.name,
+            'idUser': self.idUser,
             'email': self.email,
-            'cpf': self.cpf,
-            'password': self.password,
-            'url_avatar': self.url_avatar
+            'name': self.name,
+            'course': self.course,
+            'phone': self.phone,
+            'userType': self.userType,
+            'gender': self.gender,
+            'points': self.points,
         }
 
     def save_to_db(self):
@@ -40,7 +49,7 @@ class UserModel(db.Model):
     def find_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
 
-    def encode_auth_token(self, user_id):
+    def encode_auth_token(self):
         try:
             payload = {
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(
@@ -48,7 +57,7 @@ class UserModel(db.Model):
                     seconds=current_app.config.get('TOKEN_EXPIRATION_SECONDS')
                 ),
                 'iat': datetime.datetime.utcnow(),
-                'sub': user_id
+                'sub': self.to_json()
             }
             return jwt.encode(
                 payload,

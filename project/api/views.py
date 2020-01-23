@@ -30,27 +30,29 @@ def user_registration():
     if(not request.is_json or not post_data):
         return jsonify(createFailMessage("Invalid Payload")), 400
 
-    name = post_data["name"]
     email = post_data["email"]
-    cpf = post_data["cpf"]
+    name = post_data["name"]
+    course = post_data["course"]
+    phone = post_data["phone"]
+    userType = post_data["userType"]
+    gender = post_data["gender"]
     password = post_data["password"]
-    url_avatar = post_data["url_avatar"]
-    user = UserModel(name, email, cpf, password, url_avatar)
+
+    user = UserModel(email,name,course,phone,userType,gender,password,0)
 
     if UserModel.find_by_email(email):
         return jsonify(createFailMessage('{} already exists'.format(email))), 400
 
     try:
         user.save_to_db()
-        auth_token = user.encode_auth_token(user.user_id)
+        auth_token = user.encode_auth_token()
         response_object = createSuccessMessage('User was created')
         response_object["auth_token"] = auth_token.decode()
-        response_object["name"] = name
-        response_object["email"] = email
+        response_object.update(user.to_json())
         return jsonify(response_object), 201
-    except:
+    except Exception as e:
         db.session.rollback()
-        return jsonify(createFailMessage('Try again later')), 503
+        return jsonify(createFailMessage(e.message)), 503
         # User Login Route
 
 
@@ -71,16 +73,15 @@ def user_login():
             return jsonify(createFailMessage('User {} doesn\'t exist'.format(email))), 404
 
         if current_user and bcrypt.check_password_hash(current_user.password, password):
-            auth_token = current_user.encode_auth_token(current_user.user_id)
+            auth_token = current_user.encode_auth_token()
             response_object = createSuccessMessage('Successfully logged in.')
             response_object["auth_token"] = auth_token.decode()
-            response_object["name"] = current_user.name
-            response_object["email"] = current_user.email
+            response_object.update(current_user.to_json())
             return jsonify(response_object), 200
         else:
             return jsonify(createFailMessage('Wrong Credentials')), 401
-    except:
-        return jsonify(createFailMessage("Try again")), 500
+    except Exception as e:
+        return jsonify(createFailMessage(e.message)), 503
 
 # Logout for access
 @users_blueprint.route('/auth/logout', methods=['GET'])
@@ -97,7 +98,7 @@ def user_logout(resp):
 @authenticate
 def get_user_status(resp):
     user = UserModel.query.filter_by(user_id=resp).first()
-    auth_token = user.encode_auth_token(user.user_id)
+    auth_token = user.encode_auth_token()
     response_object = {
         'status': 'success',
         'message': 'success',

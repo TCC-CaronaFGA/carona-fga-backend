@@ -3,44 +3,45 @@ CREATE DATABASE if not exists CARONAFGA;
 USE CARONAFGA;
 
 CREATE TABLE USER (
-    idUser INT,
-    email VARCHAR(50) UNIQUE,
-    phone ENUM('D','P') UNIQUE,
-    name VARCHAR(50),
-    course BIGINT,
-    userType VARCHAR(1),
-    gender ENUM('H','M'),
-    points INT,
+    idUser INT NOT NULL AUTO_INCREMENT,
+    email VARCHAR(50) UNIQUE NOT NULL,
+    userType ENUM('D','P') NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    course VARCHAR(50) NOT NULL,
+    phone BIGINT NOT NULL,
+    gender ENUM('H','M') NOT NULL,
+    points INT NOT NULL,
+    password VARCHAR(255) NOT NULL,
     CONSTRAINT USER_PK PRIMARY KEY (idUser)
-);
+)engine=INNOdb;
 
 
 CREATE TABLE CAR (
-    idCar INT,
-    plate VARCHAR(7) UNIQUE,
-    color VARCHAR(20),
-    year INT,
-    model VARCHAR(20),
-    idUser INT,
+    idCar INT NOT NULL AUTO_INCREMENT,
+    plate VARCHAR(7) UNIQUE NOT NULL,
+    color VARCHAR(20) NOT NULL,
+    year INT NOT NULL,
+    model VARCHAR(20) NOT NULL,
+    idUser INT NOT NULL,
     CONSTRAINT CAR_PK PRIMARY KEY (idCar),
     CONSTRAINT CAR_USER_FK FOREIGN KEY (idUser) REFERENCES USER(idUser)
-);
+)engine = InnoDB;
 
 CREATE TABLE RIDE (
-    idRide INT,
-    dtRide DATETIME,
-    availableSeats INT,
-    notes VARCHAR(140),
-    cost NUMERIC(4,2),
-    idCar INT,
-    idUser INT,
+    idRide INT NOT NULL AUTO_INCREMENT,
+    dtRide DATETIME NOT NULL,
+    availableSeats INT NOT NULL,
+    notes VARCHAR(140) NOT NULL,
+    cost NUMERIC(4,2) NOT NULL,
+    idCar INT NOT NULL,
+    idUser INT NOT NULL,
     CONSTRAINT RIDE_PK PRIMARY KEY (idRide),
     CONSTRAINT RIDE_CAR_FK FOREIGN KEY (idCar) REFERENCES CAR (idCar),
     CONSTRAINT RIDE_USER_FK FOREIGN KEY (idUser) REFERENCES USER(idUser)
-);
+)engine = InnoDB;
 
 CREATE TABLE REQUEST_RIDE (
-    idRequest INT,
+    idRequest INT AUTO_INCREMENT,
     requestedSeats INT,
     requestStatus BOOLEAN,
     idRide INT,
@@ -48,20 +49,20 @@ CREATE TABLE REQUEST_RIDE (
     CONSTRAINT REQUEST_RIDE_PK PRIMARY KEY (idRequest),
     CONSTRAINT REQUEST_RIDE_USER_FK FOREIGN KEY (idPassenger) REFERENCES USER (idUser),
     CONSTRAINT REQUEST_RIDE_RIDE_FK FOREIGN KEY (idRide) REFERENCES RIDE (idRide)
-);
+)engine = InnoDB;
 
 CREATE TABLE RATING (
-    idRide INT,
-    rating INT,
-    comment VARCHAR(140),
-    idUser INT,
+    idRide INT NOT NULL,
+    rating INT NOT NULL,
+    comment VARCHAR(140) NOT NULL,
+    idUser INT NOT NULL,
     CONSTRAINT RATING_USER_FK FOREIGN KEY (idUser) REFERENCES USER (idUser),
     CONSTRAINT RATING_RIDE_FK FOREIGN KEY (idRide) REFERENCES RIDE (idRide)
-);
+)engine = InnoDB;
 
 CREATE TABLE participate (
-    idUser INT,
-    idRide INT,
+    idUser INT NOT NULL,
+    idRide INT NOT NULL,
     CONSTRAINT PARTICIPATE_USER_FK FOREIGN KEY (idUser) REFERENCES USER (idUser),
     CONSTRAINT PARTIFIPATE_RIDE_FK FOREIGN KEY (idRide) REFERENCES RIDE (idRide)
-);
+)engine = InnoDB;

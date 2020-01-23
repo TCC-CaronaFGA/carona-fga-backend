@@ -20,7 +20,7 @@ def authenticate(f):
         if isinstance(resp, str):
             response_object['message'] = resp
             return jsonify(response_object), 401
-        user = UserModel.query.filter_by(user_id=resp).first()
+        user = resp
 
         if not user:
             return jsonify(response_object), 401
