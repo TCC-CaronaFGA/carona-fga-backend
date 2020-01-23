@@ -31,19 +31,25 @@ class UserModel(db.Model):
 
     def to_json(self):
         return{
-            'idUser': self.idUser,
-            'email': self.email,
-            'name': self.name,
-            'course': self.course,
-            'phone': self.phone,
-            'userType': self.userType,
-            'gender': self.gender,
-            'points': self.points,
+            'data': {
+                'idUser': self.idUser,
+                'email': self.email,
+                'name': self.name,
+                'course': self.course,
+                'phone': self.phone,
+                'userType': self.userType,
+                'gender': self.gender,
+                'points': self.points
+            }
         }
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.filter_by(idUser=id).first()
 
     @classmethod
     def find_by_email(cls, email):
