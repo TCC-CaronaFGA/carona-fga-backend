@@ -23,7 +23,7 @@ def createSuccessMessage(message):
     return response_object
 
 # User Registration Route
-@users_blueprint.route('/auth/registration', methods=['POST'])
+@users_blueprint.route('/api/auth/registration', methods=['POST'])
 def user_registration():
     post_data = request.json
 
@@ -56,7 +56,7 @@ def user_registration():
         # User Login Route
 
 
-@users_blueprint.route('/auth/login', methods=['POST'])
+@users_blueprint.route('/api/auth/login', methods=['POST'])
 def user_login():
     post_data = request.json
 
@@ -84,7 +84,7 @@ def user_login():
         return jsonify(createFailMessage(e.message)), 503
 
 # Logout for access
-@users_blueprint.route('/auth/logout', methods=['GET'])
+@users_blueprint.route('/api/auth/logout', methods=['GET'])
 @authenticate
 def user_logout(resp):
     response_object = {
@@ -94,7 +94,7 @@ def user_logout(resp):
     return jsonify(response_object), 200
 
 
-@users_blueprint.route('/auth/status', methods=['GET'])
+@users_blueprint.route('/api/auth/status', methods=['GET'])
 @authenticate
 def get_user_status(resp):
     user = UserModel.query.filter_by(user_id=resp).first()
