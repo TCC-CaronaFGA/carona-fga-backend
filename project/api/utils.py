@@ -1,6 +1,6 @@
 from functools import wraps
 from flask import request, jsonify
-from project.api.models import UserModel
+from project.api.models.userModel import UserModel
 
 
 def authenticate(f):

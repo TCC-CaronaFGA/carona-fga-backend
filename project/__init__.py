@@ -1,7 +1,7 @@
 import os
 from flask import Flask
-from project.api.view.user import users_blueprint
-from project.api.view.car import cars_blueprint
+from project.api.views.user import users_blueprint
+from project.api.views.car import cars_blueprint
 from project.api import bcrypt
 from database import db, migrate
 from flask_cors import CORS

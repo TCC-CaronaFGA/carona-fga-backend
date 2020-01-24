@@ -1,5 +1,5 @@
 from flask import request, jsonify, Blueprint
-from project.api.models import CarModel
+from project.api.models.carModel import CarModel
 from database import db
 from project.api import bcrypt
 from project.api.utils import authenticate
