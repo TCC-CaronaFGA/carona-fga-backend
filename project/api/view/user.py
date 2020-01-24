@@ -4,7 +4,7 @@ from database import db
 from project.api import bcrypt
 from project.api.utils import authenticate
 
-users_blueprint = Blueprint('user', __name__)
+users_blueprint = Blueprint('users', __name__)
 
 
 def createFailMessage(message):
