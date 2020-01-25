@@ -1,4 +1,5 @@
 from database import db
+from datetime import datetime
 
 """ 
 CREATE TABLE RIDE (
@@ -42,7 +43,7 @@ class RideModel(db.Model):
                 'availableSeats': self.availableSeats,
                 'notes': self.notes,
                 'cost': self.cost,
-                'idCar': self.idCar
+                'idCar': self.idCar,
                 'idUser': self.idUser
             }
         }
@@ -58,7 +59,12 @@ class RideModel(db.Model):
 
     @classmethod
     def find_by_id(cls, id):
-        return cls.query.filter_by(idCar=id).first()
+        return cls.query.filter_by(idRide=id).first()
+
+    @classmethod
+    def find_all(cls):
+        now = datetime.now().utcnow()
+        return db.session.query(RideModel).filter(RideModel.dtRide >= now).all()
 
     @classmethod
     def find_by_plate(cls, plate):

@@ -41,12 +41,12 @@ def user_registration():
     user = UserModel(email,name,course,phone,userType,gender,password,0)
 
     if UserModel.find_by_email(email):
-        return jsonify(createFailMessage('{} already exists'.format(email))), 400
+        return jsonify(createFailMessage('{} já registrado.'.format(email))), 400
 
     try:
         user.save_to_db()
         auth_token = user.encode_auth_token()
-        response_object = createSuccessMessage('User was created')
+        response_object = createSuccessMessage('Usuário criado com sucesso.')
         response_object["auth_token"] = auth_token.decode()
         response_object.update(user.to_json())
         return jsonify(response_object), 201
@@ -70,16 +70,16 @@ def user_login():
         current_user = UserModel.find_by_email(email)
 
         if not current_user:
-            return jsonify(createFailMessage('User {} doesn\'t exist'.format(email))), 404
+            return jsonify(createFailMessage('E-mail ou senha incorreto.')), 401
 
         if current_user and bcrypt.check_password_hash(current_user.password, password):
             auth_token = current_user.encode_auth_token()
-            response_object = createSuccessMessage('Successfully logged in.')
+            response_object = createSuccessMessage('Logado com sucesso.')
             response_object["auth_token"] = auth_token.decode()
             response_object.update(current_user.to_json())
             return jsonify(response_object), 200
         else:
-            return jsonify(createFailMessage('Wrong Credentials')), 401
+            return jsonify(createFailMessage('E-mail ou senha incorreto.')), 401
     except Exception as e:
         return jsonify(createFailMessage(e.message)), 503
 
@@ -89,7 +89,7 @@ def user_login():
 def user_logout(resp):
     response_object = {
         'status': 'success',
-        'message': 'Successfully logged out.'
+        'message': 'Saiu com sucesso.'
     }
     return jsonify(response_object), 200
 
@@ -99,7 +99,7 @@ def user_logout(resp):
 def get_user_status(resp):
     response_object = {
         'status': 'success',
-        'message': 'success',
+        'message': 'Sucesso',
         'data': resp
     }
     return jsonify(response_object), 200
