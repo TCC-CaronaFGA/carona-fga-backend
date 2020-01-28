@@ -52,7 +52,7 @@ def user_registration():
         return jsonify(response_object), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify(createFailMessage(e.message)), 503
+        return jsonify(createFailMessage(e)), 503
         # User Login Route
 
 
@@ -81,7 +81,7 @@ def user_login():
         else:
             return jsonify(createFailMessage('E-mail ou senha incorreto.')), 401
     except Exception as e:
-        return jsonify(createFailMessage(e.message)), 503
+        return jsonify(createFailMessage(e)), 503
 
 # Logout for access
 @users_blueprint.route('/api/auth/logout', methods=['GET'])

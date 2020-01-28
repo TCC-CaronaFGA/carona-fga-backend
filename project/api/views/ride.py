@@ -80,13 +80,17 @@ def ride_registration(resp):
         return jsonify(createFailMessage("Invalid Payload")), 400
 
     dtRide = post_data["dtRide"]
+    location = post_data["location"]
+    origin = post_data["origin"]
+    destiny = post_data["destiny"]
     availableSeats = post_data["availableSeats"]
     notes = post_data["notes"]
     cost = post_data["cost"]
     idCar = post_data["idCar"]
     idUser = user['idUser']
+    finished = post_data['finished']
 
-    ride = RideModel(dtRide, availableSeats, notes, cost, idCar,idUser)
+    ride = RideModel(dtRide, location, origin, destiny, availableSeats, notes, cost, idCar, idUser, finished)
 
     try:
         ride.save_to_db()
@@ -95,7 +99,7 @@ def ride_registration(resp):
         return jsonify(response_object), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify(createFailMessage(e.message)), 503
+        return jsonify(createFailMessage(e)), 503
 
 #ride update route
 @rides_blueprint.route('/api/rides/<idRide>', methods=['PATCH'])
@@ -112,6 +116,18 @@ def ride_update(resp, idRide):
     except:
         dtRide = None
     try:
+        location = post_data["location"]
+    except:
+        location = None
+    try:
+        origin = post_data["origin"]
+    except:
+        origin = None
+    try:
+        destiny = post_data["destiny"]
+    except:
+        destiny = None
+    try:
         availableSeats = post_data["availableSeats"]
     except:
         availableSeats = None
@@ -127,6 +143,10 @@ def ride_update(resp, idRide):
         idCar = post_data["idCar"]
     except:
         idCar = None
+    try:
+        finished = post_data["finished"]
+    except:
+        finished = None
 
     ride = RideModel.find_by_id(idRide)
     
@@ -135,17 +155,21 @@ def ride_update(resp, idRide):
 
     try:
         ride.dtRide = dtRide if dtRide is not None else ride.dtRide 
+        ride.location = location if location is not None else ride.location 
+        ride.origin = origin if origin is not None else ride.origin 
+        ride.destiny = destiny if destiny is not None else ride.destiny 
         ride.availableSeats = availableSeats if availableSeats is not None else ride.availableSeats 
         ride.notes = notes if notes is not None else ride.notes 
         ride.cost = cost if cost is not None else ride.cost 
         ride.idCar = idCar if idCar is not None else ride.idCar 
+        ride.finished = finished if finished is not None else ride.finished 
         db.session.commit()
         response_object = createSuccessMessage('Carona atualizada com sucesso.')
         response_object.update(ride.to_json())
         return jsonify(response_object), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify(createFailMessage(e.message)), 503
+        return jsonify(createFailMessage(e)), 503
 
 #Ride delete route
 @rides_blueprint.route('/api/rides/<idRide>', methods=['DELETE'])
@@ -170,4 +194,4 @@ def ride_delte(resp, idRide):
         return jsonify(createSuccessMessage('Carona deletada com sucesso.')), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify(createFailMessage(e.message)), 503
+        return jsonify(createFailMessage(e)), 503

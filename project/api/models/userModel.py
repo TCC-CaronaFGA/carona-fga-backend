@@ -11,7 +11,7 @@ class UserModel(db.Model):
     email = db.Column(db.String(50), unique=True, nullable=False)
     name = db.Column(db.String(50), nullable=False)
     course = db.Column(db.String(50), nullable=False)
-    phone = db.Column(db.Integer, nullable=False)
+    phone = db.Column(db.String(11), nullable=False)
     userType = db.Column(db.String(1), nullable=False)
     gender = db.Column(db.String(1), nullable=False)
     points = db.Column(db.Integer, nullable=False)

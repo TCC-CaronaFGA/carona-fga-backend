@@ -78,7 +78,7 @@ def car_registration(resp):
         return jsonify(response_object), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify(createFailMessage(e.message)), 503
+        return jsonify(createFailMessage(e)), 503
 
 #Car update route
 @cars_blueprint.route('/api/cars/<idCar>', methods=['PATCH'])
@@ -122,7 +122,7 @@ def car_update(resp, idCar):
         return jsonify(response_object), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify(createFailMessage(e.message)), 503
+        return jsonify(createFailMessage(e)), 503
 
 #Car delete route
 @cars_blueprint.route('/api/cars/<idCar>', methods=['DELETE'])
@@ -147,4 +147,4 @@ def car_delte(resp, idCar):
         return jsonify(createSuccessMessage('Carro deletado com sucesso.')), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify(createFailMessage(e.message)), 503
+        return jsonify(createFailMessage(e)), 503

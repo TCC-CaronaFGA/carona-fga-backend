@@ -40,11 +40,15 @@ class RideModel(db.Model):
             'data': {
                 'idRide': self.idRide,
                 'dtRide': self.dtRide,
+                'location': self.location,
+                'origin': self.origin,
+                'destiny': self.destiny,
                 'availableSeats': self.availableSeats,
                 'notes': self.notes,
                 'cost': self.cost,
                 'idCar': self.idCar,
-                'idUser': self.idUser
+                'idUser': self.idUser,
+                'finished': self.finished,
             }
         }
 
