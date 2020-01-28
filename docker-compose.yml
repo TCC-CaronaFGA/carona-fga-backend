@@ -8,14 +8,26 @@ services:
       - ".:/app"
     ports:
       - 5000:5000
-    extra_hosts:
-      - "dockerhost:$DOCKERHOST"
     environment:
       - FLASK_APP=project/__init__.py
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
-      - DATABASE_URL=mysql+pymysql://admin:0000@dockerhost:3306/CARONAFGA
-      - DATABASE_TEST_URL=mysql+pymysql://admin:0000@dockerhost:3306/CARONAFGA
+      - DATABASE_URL=mysql+pymysql://admin:0000@db:3306/CARONAFGA
+      - DATABASE_TEST_URL=mysql+pymysql://admin:0000@db:3306/CARONAFGA
       - SECRET_KEY=secret_key_rocks_0edf07a1b8a5f5f1aed7580fffb69ce8972edc16a505916a77
-
-      
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'CARONAFGA'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: '0000'
+      MYSQL_ROOT_PASSWORD: '0000'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+volumes:
+  my-db:
