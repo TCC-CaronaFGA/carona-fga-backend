@@ -1,8 +1,11 @@
+from project.api.models.rideModel import RequestRideModel
+from project.api.models.rideModel import ResponseRideModel
 from database import db
 from project.api import bcrypt
 from flask import current_app
 import datetime
 import jwt
+import traceback
 
 class UserModel(db.Model):
     __tablename__ = 'USER'
@@ -29,16 +32,28 @@ class UserModel(db.Model):
             password, current_app.config.get('BCRYPT_LOG_ROUNDS')).decode()
 
     def to_json(self):
+        idUser = self.idUser
+        email = self.email
+        name = self.name
+        course = self.course
+        phone = self.phone
+        userType = self.userType
+        gender = self.gender
+        points = self.points
+        notifications = RequestRideModel.find_request_pending_to_user(idUser)
+        notificationsAnswer = ResponseRideModel.find_requested_by_user_json(idUser)
         return{
             'data': {
-                'idUser': self.idUser,
-                'email': self.email,
-                'name': self.name,
-                'course': self.course,
-                'phone': self.phone,
-                'userType': self.userType,
-                'gender': self.gender,
-                'points': self.points
+                'idUser': idUser,
+                'email': email,
+                'name': name,
+                'course': course,
+                'phone': phone,
+                'userType': userType,
+                'gender': gender,
+                'points': points,
+                'notifications': notifications,
+                'notificationsAnswer': notificationsAnswer
             }
         }
 
@@ -56,13 +71,14 @@ class UserModel(db.Model):
 
     def encode_auth_token(self):
         try:
+            self_json = self.to_json()
             payload = {
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(
                     days=current_app.config.get('TOKEN_EXPIRATION_DAYS'),
                     seconds=current_app.config.get('TOKEN_EXPIRATION_SECONDS')
                 ),
                 'iat': datetime.datetime.utcnow(),
-                'sub': self.to_json()
+                'sub': self_json
             }
             return jwt.encode(
                 payload,
@@ -70,7 +86,7 @@ class UserModel(db.Model):
                 algorithm='HS256'
             )
         except Exception as e:
-            return e
+            return traceback.format_exc()
 
     @staticmethod
     def decode_auth_token(auth_token):

@@ -1,20 +1,6 @@
 version: "2.2"
 
 services:
-  api:
-    build: .
-    image: caronafga/api:latest
-    volumes:
-      - ".:/app"
-    ports:
-      - 5000:5000
-    environment:
-      - FLASK_APP=project/__init__.py
-      - FLASK_ENV=development
-      - APP_SETTINGS=project.config.DevelopmentConfig
-      - DATABASE_URL=mysql+pymysql://admin:0000@db:3306/CARONAFGA
-      - DATABASE_TEST_URL=mysql+pymysql://admin:0000@db:3306/CARONAFGA
-      - SECRET_KEY=secret_key_rocks_0edf07a1b8a5f5f1aed7580fffb69ce8972edc16a505916a77
   db:
     image: mysql:5.7
     restart: always
@@ -29,5 +15,21 @@ services:
       - '3306'
     volumes:
       - my-db:/var/lib/mysql
+  api:
+    build: .
+    image: caronafga/api:latest
+    volumes:
+      - ".:/app"
+    ports:
+      - 5000:5000
+    depends_on:
+      - "db"
+    environment:
+      - FLASK_APP=project/__init__.py
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=mysql+pymysql://admin:0000@db:3306/CARONAFGA
+      - DATABASE_TEST_URL=mysql+pymysql://admin:0000@db:3306/CARONAFGA
+      - SECRET_KEY=secret_key_rocks_0edf07a1b8a5f5f1aed7580fffb69ce8972edc16a505916a77
 volumes:
   my-db:

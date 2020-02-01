@@ -1,4 +1,5 @@
 from flask import request, jsonify, Blueprint
+from project.api.models.rideModel import RequestRideModel
 from project.api.models.userModel import UserModel
 from database import db
 from project.api import bcrypt
@@ -46,8 +47,10 @@ def user_registration():
     try:
         user.save_to_db()
         auth_token = user.encode_auth_token()
+        print(type(auth_token), flush=True)
+
         response_object = createSuccessMessage('Usuário criado com sucesso.')
-        response_object["auth_token"] = auth_token.decode()
+        response_object["auth_token"] =  auth_token if type(auth_token) == str else auth_token.decode() 
         response_object.update(user.to_json())
         return jsonify(response_object), 201
     except Exception as e:
@@ -66,6 +69,7 @@ def user_login():
     email = post_data["email"]
     password = post_data["password"]
 
+
     try:
         current_user = UserModel.find_by_email(email)
 
@@ -74,8 +78,9 @@ def user_login():
 
         if current_user and bcrypt.check_password_hash(current_user.password, password):
             auth_token = current_user.encode_auth_token()
+            print(type(auth_token), flush=True)
             response_object = createSuccessMessage('Logado com sucesso.')
-            response_object["auth_token"] = auth_token.decode()
+            response_object["auth_token"] = auth_token if type(auth_token) == "str" else auth_token.decode() 
             response_object.update(current_user.to_json())
             return jsonify(response_object), 200
         else:

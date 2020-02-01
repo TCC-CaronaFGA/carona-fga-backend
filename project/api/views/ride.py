@@ -1,5 +1,7 @@
 from flask import request, jsonify, Blueprint
 from project.api.models.rideModel import RideModel
+from project.api.models.rideModel import RequestRideModel
+from project.api.models.rideModel import ResponseRideModel
 from database import db
 from project.api import bcrypt
 from project.api.utils import authenticate
@@ -88,9 +90,9 @@ def ride_registration(resp):
     cost = post_data["cost"]
     idCar = post_data["idCar"]
     idUser = user['idUser']
-    finished = post_data['finished']
+    finished = False
 
-    ride = RideModel(dtRide, location, origin, destiny, availableSeats, notes, cost, idCar, idUser, finished)
+    ride = RideModel(dtRide,availableSeats,notes,cost,idCar,idUser,location,origin,destiny,finished)
 
     try:
         ride.save_to_db()
@@ -192,6 +194,88 @@ def ride_delte(resp, idRide):
     try:
         ride.delete_from_db()
         return jsonify(createSuccessMessage('Carona deletada com sucesso.')), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(createFailMessage(e)), 503
+
+#Ride solicitation create
+@rides_blueprint.route('/api/rides/<idRide>', methods=['POST'])
+@authenticate
+def ride_join(resp, idRide):
+    user = resp['data']
+    post_data = request.json
+    requestedSeats = post_data["requestedSeats"]
+
+    ride = RideModel.find_by_id(idRide)
+
+    if ride is None:
+        return jsonify(createFailMessage(None)), 404
+
+
+    if ride.idUser == user['idUser']:
+        return jsonify(createFailMessage("Requisitante da carona e o dono são o mesmo usuário.")), 400
+
+    requestRide = RequestRideModel(requestedSeats, idRide, user['idUser'])
+
+    try:
+        requestRide.save_to_db()
+        return jsonify(createSuccessMessage('Requisição enviada com sucesso.')), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(createFailMessage(e)), 503
+
+#Aceitar solicitação
+@rides_blueprint.route('/api/requests/<idRequest>/<requestAnswer>', methods=['POST'])
+@authenticate
+def request_answer(resp, idRequest  , requestAnswer):
+    user = resp['data']
+    request = RequestRideModel.find_by_id(idRequest)
+    print(request.to_json(), flush=True)
+
+    if request is None:
+        return jsonify(createFailMessage(None)), 404
+
+    if request.requestStatus != "P":
+        return jsonify("Essa solicitação já foi respondida."), 400
+
+    ride = RideModel.find_by_id(request.idRide)
+
+    if ride.idUser != user['idUser']:
+        return jsonify(createFailMessage(None)), 400
+
+    try:
+        response = ResponseRideModel(request.idRequest, request.idPassenger, "P")
+        if requestAnswer == "1":
+            setattr(request, 'requestStatus', "A") 
+            response.answer = "A" 
+        else:
+            setattr(request, 'requestStatus', "R") 
+            response.answer = "R" 
+
+        response.save_to_db()
+
+        response_object = createSuccessMessage('Requisição respondida com sucesso.')
+        response_object.update(request.to_json())
+        return jsonify(response_object), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(createFailMessage(e)), 503
+
+
+
+#notification read route
+@rides_blueprint.route('/api/notifications/read', methods=['POST'])
+@authenticate
+def read_notifications(resp):
+    user = resp['data']
+
+    answers = ResponseRideModel.find_requested_by_user(user['idUser'])
+
+    try:   
+        for answer in answers:
+            answer.alreadySeen = True
+        db.session.commit()
+        return jsonify(createSuccessMessage('Notificações lidas com sucesso.')), 200
     except Exception as e:
         db.session.rollback()
         return jsonify(createFailMessage(e)), 503

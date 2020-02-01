@@ -16,7 +16,6 @@ def create_app(script_info=None):
     app.config.from_object(app_settings)
 
     db.init_app(app)
-    
     with app.app_context():
       db.create_all()
     migrate.init_app(app, db)
