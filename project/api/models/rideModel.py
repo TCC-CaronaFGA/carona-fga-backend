@@ -141,6 +141,19 @@ class RequestRideModel(db.Model):
         return db.session.query(RequestRideModel).filter(RequestRideModel.idRide == idRide).filter(RequestRideModel.requestStatus == "A").all()
 
     @classmethod
+    def find_approved_request_by_ride_json(cls, idRide):
+        from project.api.models.userModel import UserModel
+        requests = RequestRideModel.find_approved_request_by_ride(idRide)
+        requests_json = []
+        for request in requests:
+            idPassenger = request.idPassenger
+            user = UserModel.find_by_id(idPassenger).to_json()['data']
+            user.update(requestedSeats = request.requestedSeats)
+            requests_json.append(user)
+        return requests_json
+
+
+    @classmethod
     def find_request_pending_to_user(cls, idUser):
         rideList = RideModel.find_by_user(idUser)
         requests_json = []

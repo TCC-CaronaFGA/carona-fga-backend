@@ -198,6 +198,29 @@ def ride_delte(resp, idRide):
         db.session.rollback()
         return jsonify(createFailMessage(e)), 503
 
+#Ride information get
+@rides_blueprint.route('/api/rides/<idRide>', methods=['GET'])
+@authenticate
+def ride_info(resp, idRide):
+    user = resp['data']
+
+    ride = RideModel.find_by_id(idRide)
+
+
+    if ride is None:
+        return jsonify(createFailMessage(None)), 404
+
+    approved_requests = RequestRideModel.find_approved_request_by_ride_json(ride.idRide)
+
+    try:
+        json = createSuccessMessage('Requisição enviada com sucesso.')
+        json.update(ride.to_json())
+        json['data']['passengers'] = approved_requests
+        return jsonify(json), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(createFailMessage(e)), 503
+
 #Ride solicitation create
 @rides_blueprint.route('/api/rides/<idRide>', methods=['POST'])
 @authenticate
