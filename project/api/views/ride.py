@@ -31,10 +31,6 @@ def createSuccessMessage(message):
 @rides_blueprint.route('/api/rides', methods=['get'])
 @authenticate
 def ride_list(resp):
-
-    if(not request.is_json):
-        return jsonify(createFailMessage("Invalid Payload")), 400
-
     rides = RideModel.find_all()
 
     rides_json = []
@@ -53,9 +49,6 @@ def ride_list(resp):
 @authenticate
 def user_ride_list(resp):
     user = resp['data']
-
-    if(not request.is_json):
-        return jsonify(createFailMessage("Invalid Payload")), 400
 
     rides = RideModel.find_by_user(user['idUser'])
 
@@ -86,7 +79,10 @@ def ride_registration(resp):
     origin = post_data["origin"]
     destiny = post_data["destiny"]
     availableSeats = post_data["availableSeats"]
-    notes = post_data["notes"]
+    try:
+        notes = post_data["notes"]
+    except:
+        notes = ''
     cost = post_data["cost"]
     idCar = post_data["idCar"]
     idUser = user['idUser']

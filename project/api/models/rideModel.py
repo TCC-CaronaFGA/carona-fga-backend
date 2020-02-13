@@ -30,6 +30,7 @@ class RideModel(db.Model):
         self.finished = finished
 
     def to_json(self):
+        from project.api.models.userModel import UserModel
         requests = RequestRideModel.find_approved_request_by_ride(self.idRide)
         availableSeats = self.availableSeats
         for request in requests:
@@ -50,6 +51,7 @@ class RideModel(db.Model):
                 'idCar': self.idCar,
                 'idUser': self.idUser,
                 'finished': self.finished,
+                'user': UserModel.find_by_id(self.idUser).to_json()["data"]
             }
         }
 

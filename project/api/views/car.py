@@ -31,10 +31,6 @@ def createSuccessMessage(message):
 @authenticate
 def car_list(resp):
     user = resp['data']
-
-    if(not request.is_json):
-        return jsonify(createFailMessage("Invalid Payload")), 400
-
     idUser = user['idUser']
 
     cars = CarModel.find_by_user(idUser)
