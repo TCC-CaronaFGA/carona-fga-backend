@@ -92,7 +92,7 @@ class UserModel(db.Model):
 
     def encode_auth_token(self):
         try:
-            self_json = self.to_min_json()
+            self_json = self.to_json()
             payload = {
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(
                     days=current_app.config.get('TOKEN_EXPIRATION_DAYS'),
@@ -107,7 +107,8 @@ class UserModel(db.Model):
                 algorithm='HS256'
             )
         except Exception as e:
-            return ""
+            print(traceback.format_exc(), flush=True)
+            return traceback.format_exc()
 
     @staticmethod
     def decode_auth_token(auth_token):
