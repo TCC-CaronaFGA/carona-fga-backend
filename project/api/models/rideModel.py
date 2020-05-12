@@ -162,6 +162,7 @@ class RequestRideModel(db.Model):
         for ride in rideList:
             rideRequests = db.session.query(RequestRideModel).filter(RequestRideModel.idRide == ride.idRide).filter(RequestRideModel.requestStatus == "P").all()
             for rideRequest in rideRequests:
+                print(rideRequest.to_json(), flush=True)
                 request_json = rideRequest.to_json()['data']
                 requests_json.append(request_json)
         return requests_json

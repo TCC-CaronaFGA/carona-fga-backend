@@ -1,3 +1,4 @@
+import os
 from project import create_app
 from flask.cli import FlaskGroup
 

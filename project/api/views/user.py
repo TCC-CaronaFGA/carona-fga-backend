@@ -102,9 +102,10 @@ def user_logout(resp):
 @users_blueprint.route('/api/auth/status', methods=['GET'])
 @authenticate
 def get_user_status(resp):
+    print(resp["data"]["idUser"], flush=True);
     response_object = {
         'status': 'success',
         'message': 'Sucesso',
-        'data': resp
+        'data': UserModel.find_by_id(resp["data"]["idUser"]).to_json()
     }
     return jsonify(response_object), 200
