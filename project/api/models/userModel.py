@@ -95,15 +95,15 @@ class UserModel(db.Model):
             self_json = self.to_json()
             payload = {
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(
-                    days=current_app.config.get('TOKEN_EXPIRATION_DAYS'),
-                    seconds=current_app.config.get('TOKEN_EXPIRATION_SECONDS')
+                    days=30,
+                    seconds=0
                 ),
                 'iat': datetime.datetime.utcnow(),
                 'sub': self_json
             }
             return jwt.encode(
                 payload,
-                current_app.config.get('SECRET_KEY'),
+                "secret_key_rocks_0edf07a1b8a5f5f1aed7580fffb69ce8972edc16a505916a77",
                 algorithm='HS256'
             )
         except Exception as e:
@@ -114,7 +114,7 @@ class UserModel(db.Model):
     def decode_auth_token(auth_token):
         try:
             payload = jwt.decode(
-                auth_token, current_app.config.get('SECRET_KEY'))
+                auth_token, "secret_key_rocks_0edf07a1b8a5f5f1aed7580fffb69ce8972edc16a505916a77")
             return payload['sub']
         except jwt.ExpiredSignatureError:
             return 'Signature expired. Please log in again.'
