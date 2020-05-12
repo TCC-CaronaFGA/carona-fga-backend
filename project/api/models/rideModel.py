@@ -34,7 +34,7 @@ class RideModel(db.Model):
         requests = RequestRideModel.find_approved_request_by_ride(self.idRide)
         availableSeats = self.availableSeats
         for request in requests:
-            request_json = request.to_json()['data']
+            request_json = request.to_min_json()['data']
             availableSeats = availableSeats - request_json['requestedSeats']
 
 
@@ -51,7 +51,7 @@ class RideModel(db.Model):
                 'idCar': self.idCar,
                 'idUser': self.idUser,
                 'finished': self.finished,
-                'user': UserModel.find_by_id(self.idUser).to_json()["data"]
+                'user': UserModel.find_by_id(self.idUser).to_min_json()["data"]
             }
         }
 
@@ -98,13 +98,24 @@ class RequestRideModel(db.Model):
         self.idPassenger = idPassenger
 
     def to_json(self):
+        from project.api.models.userModel import UserModel
         return{
             'data': {
                 'idRequest': self.idRequest,
                 'requestedSeats': self.requestedSeats,
                 'requestStatus': self.requestStatus,
-                'idRide': self.idRide,
-                'idPassenger': self.idPassenger,
+                'ride': RideModel.find_by_id(self.idRide).to_json()["data"],
+                'passenger': UserModel.find_by_id(self.idPassenger).to_min_json()["data"],
+            }
+        }
+    def to_min_json(self):
+        from project.api.models.userModel import UserModel
+        return{
+            'data': {
+                'idRequest': self.idRequest,
+                'requestedSeats': self.requestedSeats,
+                'requestStatus': self.requestStatus,
+                'passenger': UserModel.find_by_id(self.idPassenger).to_min_json()["data"],
             }
         }
 
@@ -186,7 +197,7 @@ class ResponseRideModel(db.Model):
     def to_json(self):
         return{
             'data': {
-                'idRequest': self.idRequest,
+                'request': RequestRideModel.find_by_id(self.idRequest).to_json(),
                 'idPassenger': self.idPassenger,
                 'alreadySeen': self.alreadySeen,
                 'answer': self.answer

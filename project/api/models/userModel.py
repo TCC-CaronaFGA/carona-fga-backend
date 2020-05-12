@@ -57,6 +57,27 @@ class UserModel(db.Model):
             }
         }
 
+
+    def to_min_json(self):
+        idUser = self.idUser
+        email = self.email
+        name = self.name
+        course = self.course
+        phone = self.phone
+        userType = self.userType
+        gender = self.gender
+        return{
+            'data': {
+                'idUser': idUser,
+                'email': email,
+                'name': name,
+                'course': course,
+                'phone': phone,
+                'userType': userType,
+                'gender': gender
+            }
+        }
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -71,7 +92,7 @@ class UserModel(db.Model):
 
     def encode_auth_token(self):
         try:
-            self_json = self.to_json()
+            self_json = self.to_min_json()
             payload = {
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(
                     days=current_app.config.get('TOKEN_EXPIRATION_DAYS'),
@@ -86,7 +107,7 @@ class UserModel(db.Model):
                 algorithm='HS256'
             )
         except Exception as e:
-            return traceback.format_exc()
+            return ""
 
     @staticmethod
     def decode_auth_token(auth_token):

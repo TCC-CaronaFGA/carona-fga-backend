@@ -274,7 +274,6 @@ def request_answer(resp, idRequest  , requestAnswer):
         response.save_to_db()
 
         response_object = createSuccessMessage('Requisição respondida com sucesso.')
-        response_object.update(request.to_json())
         return jsonify(response_object), 200
     except Exception as e:
         db.session.rollback()
