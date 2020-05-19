@@ -7,6 +7,7 @@ from project.api import bcrypt
 from project.api.utils import authenticate
 import json
 import sys
+import datetime
 
 rides_blueprint = Blueprint('ride', __name__)
 
@@ -74,7 +75,9 @@ def ride_registration(resp):
     if(not request.is_json or not post_data):
         return jsonify(createFailMessage("Invalid Payload")), 400
 
-    dtRide = post_data["dtRide"]
+    # dtRide = post_data["dtRide"]
+    format = '%Y-%m-%d %H:%M'
+    dtRide = datetime.datetime.strptime(post_data["dtRide"], format)
     location = post_data["location"]
     origin = post_data["origin"]
     destiny = post_data["destiny"]
