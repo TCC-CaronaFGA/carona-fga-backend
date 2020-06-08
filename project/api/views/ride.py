@@ -231,7 +231,8 @@ def ride_join(resp, idRide):
     ride = RideModel.find_by_id(idRide)
 
     if ride is None:
-        return jsonify(createFailMessage(None)), 404
+        if ride.requestedSeats != null:
+            return jsonify(createFailMessage(None)), 404
 
 
     if ride.idUser == user['idUser']:
@@ -249,7 +250,7 @@ def ride_join(resp, idRide):
 #Aceitar solicitação
 @rides_blueprint.route('/api/requests/<idRequest>/<requestAnswer>', methods=['POST'])
 @authenticate
-def request_answer(resp, idRequest  , requestAnswer):
+def request_answer(resp, idRequest, requestAnswer):
     user = resp['data']
     request = RequestRideModel.find_by_id(idRequest)
     print(request.to_json(), flush=True)
