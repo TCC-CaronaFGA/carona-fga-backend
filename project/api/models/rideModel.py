@@ -33,15 +33,17 @@ class RideModel(db.Model):
         from project.api.models.userModel import UserModel
         requests = RequestRideModel.find_approved_request_by_ride(self.idRide)
         availableSeats = self.availableSeats
+        passengers_json = []
         for request in requests:
             request_json = request.to_min_json()['data']
             availableSeats = availableSeats - request_json['requestedSeats']
-
+            passenger_json = request_json['passenger']
+            passengers_json.append(passenger_json)
 
         return{
             'data': {
                 'idRide': self.idRide,
-                'dtRide': self.dtRide,
+                'dtRide': self.dtRide.strftime("%m/%d/%Y, %H:%M:%S"),
                 'location': self.location,
                 'origin': self.origin,
                 'destiny': self.destiny,
@@ -51,7 +53,8 @@ class RideModel(db.Model):
                 'idCar': self.idCar,
                 'idUser': self.idUser,
                 'finished': self.finished,
-                'user': UserModel.find_by_id(self.idUser).to_min_json()["data"]
+                'user': UserModel.find_by_id(self.idUser).to_min_json()["data"],
+                'passenger': passengers_json,
             }
         }
 
